@@ -155,7 +155,7 @@ def callback(request):
         usrs = DiscordUser.objects.filter(uid=uid)
         usr_count = 0
         for usr in usrs:
-            for k, v in data:
+            for k, v in data.items():
                 setattr(usr, k, v)
             usr.save()
             usr_count += 1
