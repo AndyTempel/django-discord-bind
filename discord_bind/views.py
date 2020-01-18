@@ -184,6 +184,8 @@ def callback(request):
     # Get Discord user data
     user = oauth.get(settings.DISCORD_BASE_URI + '/users/@me').json()
     data = decompose_data(user, token)
+    if settings.DISCORD_EMAIL_REQUIRED and data['email'] in (None, "", " "):
+        return HttpResponseRedirect("/?login_error=true&reason=missing%20email")
     bind_user(request, data)
 
     # Accept Discord invites

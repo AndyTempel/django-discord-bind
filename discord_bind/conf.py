@@ -42,6 +42,7 @@ class DiscordBindConf(AppConf):
 
     # OAuth2 scope
     EMAIL_SCOPE = False
+    EMAIL_REQUIRED = False
     GUILDS_SCOPE = True
     INVITE_SCOPE = False
     CONNECTIONS_SCOPE = False
