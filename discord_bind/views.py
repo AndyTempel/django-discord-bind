@@ -24,11 +24,11 @@ SOFTWARE.
 
 """
 from __future__ import unicode_literals
-import random
-import string
+
 from datetime import datetime
 
-from django.http import HttpResponseRedirect, HttpResponseForbidden
+from django.http import HttpResponseRedirect
+
 try:
     from django.urls import reverse
 except ImportError:
@@ -47,6 +47,7 @@ from discord_bind.models import DiscordUser, DiscordInvite
 from discord_bind.conf import settings
 
 import logging
+
 logger = logging.getLogger(__name__)
 
 
@@ -93,13 +94,13 @@ def index(request):
         request.session['discord_bind_invite_uri'] = request.GET['invite_uri']
     else:
         request.session['discord_bind_invite_uri'] = (
-                settings.DISCORD_INVITE_URI)
+            settings.DISCORD_INVITE_URI)
 
     if 'return_uri' in request.GET:
         request.session['discord_bind_return_uri'] = request.GET['return_uri']
     else:
         request.session['discord_bind_return_uri'] = (
-                settings.DISCORD_RETURN_URI)
+            settings.DISCORD_RETURN_URI)
 
     if 'next' in request.GET:
         request.session['discord_bind_next_uri'] = request.GET.get('next', "/")
@@ -151,14 +152,14 @@ def callback(request):
         else:
             return HttpResponseRedirect("/?login_error=true")
 
-        usr_count = DiscordUser.objects.filter(uid=uid).update(user=remote_user, **data)
-        # try:
-        #     remote_user.first_name = data.get("username", "")
-        #     remote_user.last_name = data.get("discriminator", "")
-        #     remote_user.email = data.get("email", "")
-        #     remote_user.save()
-        # except Exception as e:
-        #     logger.error("Failed to update django user - {}".format(e))
+        usrs = DiscordUser.objects.filter(uid=uid)
+        usr_count = 0
+        for usr in usrs:
+            for k, v in data:
+                setattr(usr, k, v)
+            usr.save()
+            usr_count += 1
+
         if usr_count == 0:
             new_user = DiscordUser(uid=uid, user=remote_user, **data)
             new_user.save()
@@ -191,7 +192,7 @@ def callback(request):
     # Accept Discord invites
     groups = request.user.groups.all()
     invites = DiscordInvite.objects.filter(active=True).filter(
-                                        Q(groups__in=groups) | Q(groups=None))
+        Q(groups__in=groups) | Q(groups=None))
     count = 0
     for invite in invites:
         r = oauth.post(settings.DISCORD_BASE_URI + '/invites/' + invite.code)
