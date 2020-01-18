@@ -33,14 +33,12 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django.utils.encoding import python_2_unicode_compatible
 
 from discord_bind.conf import settings
 
 logger = logging.getLogger(__name__)
 
 
-@python_2_unicode_compatible
 class DiscordUser(models.Model):
     """ Discord User mapping. """
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="discorduser")
@@ -55,7 +53,7 @@ class DiscordUser(models.Model):
     expiry = models.DateTimeField(null=True)
 
     def __str__(self):
-        return self.username + '.' + self.discriminator
+        return self.username + '#' + self.discriminator
 
 
 @receiver(post_save, sender=User)
@@ -69,7 +67,6 @@ def save_user_profile(sender, instance, **kwargs):
     instance.discorduser.save()
 
 
-@python_2_unicode_compatible
 class DiscordInvite(models.Model):
     """ Discord instant invites """
     TEXT = 'text'
