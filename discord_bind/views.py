@@ -217,9 +217,12 @@ def callback(request):
         url = request.session.get('discord_bind_next_uri', "/")
 
     # Clean up
-    del request.session['discord_bind_oauth_state']
-    del request.session['discord_bind_invite_uri']
-    del request.session['discord_bind_return_uri']
-    del request.session['discord_bind_next_uri']
+    try:
+        del request.session['discord_bind_oauth_state']
+        del request.session['discord_bind_invite_uri']
+        del request.session['discord_bind_return_uri']
+        del request.session['discord_bind_next_uri']
+    except:
+        pass
 
     return HttpResponseRedirect(url)
