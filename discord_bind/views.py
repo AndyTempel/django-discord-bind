@@ -211,10 +211,10 @@ def callback(request):
     # Select return target
     if count > 0:
         messages.success(request, '%d Discord invite(s) accepted.' % count)
-        url = request.session['discord_bind_next_uri']
+        url = request.session.get('discord_bind_next_uri', "/")
         # url = request.session['discord_bind_invite_uri']
     else:
-        url = request.session['discord_bind_next_uri']
+        url = request.session.get('discord_bind_next_uri', "/")
 
     # Clean up
     del request.session['discord_bind_oauth_state']
